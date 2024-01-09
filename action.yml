@@ -3,7 +3,7 @@ description: 'Generates release notes for a specified milestone.'
 author: 'Jeff Patton'
 
 branding:
-  icon: 'notebook'
+  icon: 'activity'
   color: 'blue'
 
 inputs:
