@@ -1,0 +1,39 @@
+name: Generate Release Notes
+
+on:
+  workflow_call:
+    inputs:
+      milestone_number:
+        required: true
+        type: number
+
+jobs:
+  generate_notes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyGithub
+
+      - name: Generate Release Notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_REPOSITORY: ${{ github.repository }}
+          INPUT_MILESTONE_NUMBER: ${{ inputs.milestone_number }}
+        run: |
+          python generate_release_notes.py
+
+      - name: Upload Release Notes
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-notes
+          path: RELEASE.md

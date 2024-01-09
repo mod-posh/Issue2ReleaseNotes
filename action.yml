@@ -1,0 +1,42 @@
+name: 'Generate Release Notes'
+description: 'Generates release notes for a specified milestone.'
+author: 'Jeff Patton'
+
+branding:
+  icon: 'notebook'
+  color: 'blue'
+  
+inputs:
+  milestone_number:
+    description: 'The milestone number for which to generate release notes.'
+    required: true
+    type: number
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install PyGithub
+
+    - name: Generate Release Notes
+      run: python generate_release_notes.py
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        INPUT_REPOSITORY: ${{ github.repository }}
+        INPUT_MILESTONE_NUMBER: ${{ inputs.milestone_number }}
+
+    - name: Upload Release Notes
+      uses: actions/upload-artifact@v2
+      with:
+        name: release-notes
+        path: RELEASE.md
