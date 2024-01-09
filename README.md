@@ -23,7 +23,7 @@ To use this action in your workflow, include a step that calls this workflow wit
 ```yaml
 jobs:
   call_generate_release_notes:
-    uses: ./.github/workflows/generate_release_notes.yml
+    uses: jeffpatton1971/Issue2Release@v0.0.1.2
     with:
       milestone_number: 1 # Replace with your milestone number
 ```
