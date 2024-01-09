@@ -1,11 +1,11 @@
-name: 'Generate Release Notes'
+name: 'Generate Release Notes from Milestone'
 description: 'Generates release notes for a specified milestone.'
 author: 'Jeff Patton'
 
 branding:
   icon: 'notebook'
   color: 'blue'
-  
+
 inputs:
   milestone_number:
     description: 'The milestone number for which to generate release notes.'
