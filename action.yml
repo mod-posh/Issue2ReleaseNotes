@@ -11,6 +11,10 @@ inputs:
     description: 'The milestone number for which to generate release notes.'
     required: true
     type: number
+  verbose:
+    description: 'A boolean flag that will output more information'
+    required: false
+    type: boolean
 
 runs:
   using: 'composite'

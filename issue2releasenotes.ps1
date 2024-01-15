@@ -1,5 +1,7 @@
+[CmdletBinding()]
 param (
- [int]$MilestoneNumber
+ [int]$MilestoneNumber,
+ [bool]$Verbose = $false
 )
 try
 {
@@ -13,13 +15,24 @@ try
  }
 
  $milestoneUri = "https://api.github.com/repos/$($repository)/milestones/$($MilestoneNumber)"
- $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers
+
+ if ($Verbose) {
+  Write-Verbose "MilestoneUri: $($milestoneUri)"
+  $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers -Verbose
+ } else {
+  $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers
+ }
 
  if ($Milestone)
  {
   # Fetch issues
   $issuesUri = "https://api.github.com/repos/$($repository)/issues?state=closed&milestone=$($milestone.Number)"
-  $issues = Invoke-RestMethod -Uri $issuesUri -Headers $headers
+  if ($Verbose) {
+   Write-Verbose "IssuesUri: $($issuesUri)"
+   $issues = Invoke-RestMethod -Uri $issuesUri -Headers $headers
+  } else {
+   $issues = Invoke-RestMethod -Uri $issuesUri -Headers $headers -Verbose
+  }
 
   $labels = $issues | ForEach-Object { $_.labels } | Sort-Object -Property Name -Unique;
 
