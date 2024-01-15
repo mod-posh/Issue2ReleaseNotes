@@ -11,7 +11,7 @@ try
  [System.Text.StringBuilder]$stringbuilder = [System.Text.StringBuilder]::new()
 
  $headers = @{
-  Authorization = "token $token"
+  Authorization = "token $($token)"
  }
 
  $milestoneUri = "https://api.github.com/repos/$($repository)/milestones/$($MilestoneNumber)"
