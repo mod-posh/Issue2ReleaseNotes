@@ -14,7 +14,7 @@ inputs:
   verbose:
     description: 'A boolean flag that will output more information'
     required: false
-    type: boolean
+    type: string
 
 runs:
   using: 'composite'
