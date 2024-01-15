@@ -25,8 +25,9 @@ runs:
     - name: Create ReleaseNotes
       env:
         MilestoneNumber: ${{ inputs.milestone_number }}
+        Verbose: ${{ inputs.verbose }}
       run: |
-        & $env:GITHUB_ACTION_PATH\\issue2releasenotes.ps1 -MilestoneNumber $MilestoneNumber -Version $version
+        & $env:GITHUB_ACTION_PATH\\issue2releasenotes.ps1 -MilestoneNumber $MilestoneNumber -Verbose $Verbose
       shell: pwsh
 
     - name: Upload Release Notes
