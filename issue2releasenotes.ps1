@@ -1,13 +1,11 @@
 param (
  [int]$MilestoneNumber,
- [string]$Verbose = 'false'
+ [string]$Verbose = 'info'
 )
 try
 {
  $ErrorActionPreference = 'Stop';
  $Error.Clear();
-
- [bool]$Verbose = [System.Convert]::ToBoolean($Verbose);
 
  $repository = $env:GITHUB_REPOSITORY
  $token = $env:GITHUB_TOKEN
@@ -17,22 +15,28 @@ try
 
  $milestoneUri = "https://api.github.com/repos/$($repository)/milestones/$($MilestoneNumber)"
 
- if ($Verbose) {
-  Write-Verbose "MilestoneUri: $($milestoneUri)"
-  $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers -Verbose
- } else {
-  $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers
+ switch ($Verbose.ToLower()) {
+  'verbose' {
+   Write-Verbose "MilestoneUri: $($milestoneUri)"
+   $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers -Verbose
+  }
+  'info' {
+   $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers
+  }
  }
 
  if ($Milestone)
  {
   # Fetch issues
   $issuesUri = "https://api.github.com/repos/$($repository)/issues?state=closed&milestone=$($milestone.Number)"
-  if ($Verbose) {
-   Write-Verbose "IssuesUri: $($issuesUri)"
-   $issues = Invoke-RestMethod -Uri $issuesUri -Headers $headers
-  } else {
-   $issues = Invoke-RestMethod -Uri $issuesUri -Headers $headers -Verbose
+
+  switch ($Verbose.ToLower()) {
+   'verbose' {
+    Write-Verbose "IssuesUri: $($issuesUri)"
+    $issues = Invoke-RestMethod -Uri $issuesUri -Headers $headers
+    }
+   'info' {
+   }
   }
 
   $labels = $issues | ForEach-Object { $_.labels } | Sort-Object -Property Name -Unique;
