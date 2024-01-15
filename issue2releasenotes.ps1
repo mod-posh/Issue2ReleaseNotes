@@ -15,12 +15,15 @@ try
 
  $milestoneUri = "https://api.github.com/repos/$($repository)/milestones/$($MilestoneNumber)"
 
- switch ($Verbose.ToLower()) {
-  'verbose' {
-   Write-Verbose "MilestoneUri: $($milestoneUri)"
+ switch ($Verbose.ToLower())
+ {
+  'verbose'
+  {
+   Write-Host "MilestoneUri: $($milestoneUri)"
    $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers -Verbose
   }
-  'info' {
+  'info'
+  {
    $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers
   }
  }
@@ -30,12 +33,15 @@ try
   # Fetch issues
   $issuesUri = "https://api.github.com/repos/$($repository)/issues?state=closed&milestone=$($milestone.Number)"
 
-  switch ($Verbose.ToLower()) {
-   'verbose' {
-    Write-Verbose "IssuesUri: $($issuesUri)"
+  switch ($Verbose.ToLower())
+  {
+   'verbose'
+   {
+    Write-Host "IssuesUri: $($issuesUri)"
     $issues = Invoke-RestMethod -Uri $issuesUri -Headers $headers
-    }
-   'info' {
+   }
+   'info'
+   {
    }
   }
 
@@ -69,5 +75,5 @@ try
 }
 catch
 {
- throw $_.Exception.Message;
+ throw $_.InvocationInfo;
 }
