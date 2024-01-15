@@ -10,7 +10,7 @@ inputs:
   milestone_number:
     description: 'The milestone number for which to generate release notes.'
     required: true
-    type: number
+    type: string
   github_token:
     description: 'GitHub token'
     required: true
