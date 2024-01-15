@@ -1,4 +1,3 @@
-[CmdletBinding()]
 param (
  [int]$MilestoneNumber,
  [bool]$Verbose = $false
