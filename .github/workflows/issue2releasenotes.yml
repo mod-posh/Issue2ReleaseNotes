@@ -22,7 +22,7 @@ jobs:
         env:
           MilestoneNumber: ${{ inputs.milestone_number }}
         run: |
-          pwsh -File issue2releasenotes.ps1 -MilestoneNumber $MilestoneNumber
+          & $env:GITHUB_ACTION_PATH\\issue2releasenotes.ps1 -MilestoneNumber $MilestoneNumber
         shell: pwsh
 
       - name: Upload Release Notes
