@@ -1,6 +1,5 @@
 param (
- [int]$MilestoneNumber,
- [string]$Verbose = 'info'
+ [int]$MilestoneNumber
 )
 try
 {
@@ -17,35 +16,16 @@ try
 
  $milestoneUri = "https://api.github.com/repos/$($repository)/milestones/$($MilestoneNumber)"
 
- switch ($Verbose.ToLower())
- {
-  'verbose'
-  {
-   Write-Host "MilestoneUri: $($milestoneUri)"
-   $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers -Verbose
-  }
-  'info'
-  {
-   $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers
-  }
- }
+ Write-Host "MilestoneUri: $($milestoneUri)"
+ $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers
 
  if ($Milestone)
  {
   # Fetch issues
   $issuesUri = "https://api.github.com/repos/$($repository)/issues?state=closed&milestone=$($milestone.Number)"
 
-  switch ($Verbose.ToLower())
-  {
-   'verbose'
-   {
-    Write-Host "IssuesUri: $($issuesUri)"
-    $issues = Invoke-RestMethod -Uri $issuesUri -Headers $headers
-   }
-   'info'
-   {
-   }
-  }
+  Write-Host "IssuesUri: $($issuesUri)"
+  $issues = Invoke-RestMethod -Uri $issuesUri -Headers $headers
 
   $labels = $issues | ForEach-Object { $_.labels } | Sort-Object -Property Name -Unique;
 
