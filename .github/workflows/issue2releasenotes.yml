@@ -8,29 +8,19 @@ on:
         type: number
 
 jobs:
-  generate_notes:
-    runs-on: ubuntu-latest
+  create_releasenotes:
+    runs-on: windows-latest
+    name: Create Project Release Notes
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install PyGithub
-
-      - name: Generate Release Notes
+      - name: Create Releasenotes
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          INPUT_REPOSITORY: ${{ github.repository }}
-          INPUT_MILESTONE_NUMBER: ${{ inputs.milestone_number }}
+          MilestoneNumber: ${{ inputs.milestone_number }}
         run: |
-          python generate_release_notes.py
+          pwsh -File issue2releasenotes.ps1 -MilestoneNumber $MilestoneNumber
+        shell: pwsh
 
       - name: Upload Release Notes
         uses: actions/upload-artifact@v2
