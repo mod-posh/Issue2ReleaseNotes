@@ -8,7 +8,7 @@ try
 
  $repository = $env:GITHUB_REPOSITORY
  $token = $env:GITHUB_TOKEN
- $MilestoneNumber = $env:milestone_number
+ $MilestoneNumber = $env:MilestoneNumber
  [System.Text.StringBuilder]$stringbuilder = [System.Text.StringBuilder]::new()
 
  $headers = @{
