@@ -75,5 +75,5 @@ try
 }
 catch
 {
- throw $_.InvocationInfo;
+ throw $_.InvocationInfo |Out-String;
 }
