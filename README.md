@@ -12,9 +12,9 @@ The `generate_release_notes.yml` file defines the workflow that is triggered by 
 
 - `milestone_number`: The number of the milestone for which you want to generate release notes. This input is required.
 
-## Python Script (`generate_release_notes.py`)
+## PowerShell Script (`generate_release_notes.ps1`)
 
-The Python script, `generate_release_notes.py`, uses the GitHub API to fetch closed issues from a specified milestone and generates a markdown-formatted release notes file. It organizes the issues by their labels, creating a section for each label.
+The PowerShell script, `generate_release_notes.ps1`, uses the GitHub API to fetch closed issues from a specified milestone and generates a markdown-formatted release notes file. It organizes the issues by their labels, creating a section for each label.
 
 ## Usage
 
@@ -23,7 +23,7 @@ To use this action in your workflow, include a step that calls this workflow wit
 ```yaml
 jobs:
   call_generate_release_notes:
-    uses: jeffpatton1971/Issue2Release@v0.0.1.2
+    uses: mod-posh/Issue2Release@v0.0.2.0
     with:
       milestone_number: 1 # Replace with your milestone number
 ```
