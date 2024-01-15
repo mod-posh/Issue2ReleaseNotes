@@ -9,6 +9,8 @@ try
 
  $repository = $env:GITHUB_REPOSITORY
  $token = $env:GITHUB_TOKEN
+ [System.Text.StringBuilder]$stringbuilder = [System.Text.StringBuilder]::new()
+
  $headers = @{
   Authorization = "token $token"
  }
@@ -47,7 +49,6 @@ try
 
   $labels = $issues | ForEach-Object { $_.labels } | Sort-Object -Property Name -Unique;
 
-  [System.Text.StringBuilder]$stringbuilder = [System.Text.StringBuilder]::new()
   [void]$stringbuilder.AppendLine( "# $($milestone.title)" )
   [void]$stringbuilder.AppendLine( "" )
 
@@ -75,5 +76,6 @@ try
 }
 catch
 {
+ $_.Exception.Message;
  throw $_.InvocationInfo |Out-String;
 }
