@@ -1,11 +1,13 @@
 param (
  [int]$MilestoneNumber,
- [bool]$Verbose = $false
+ [string]$Verbose = 'false'
 )
 try
 {
  $ErrorActionPreference = 'Stop';
  $Error.Clear();
+
+ [bool]$Verbose = [System.Convert]::ToBoolean($Verbose);
 
  $repository = $env:GITHUB_REPOSITORY
  $token = $env:GITHUB_TOKEN
