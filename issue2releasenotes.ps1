@@ -27,8 +27,10 @@ try
 
   Write-Host "IssuesUri: $($issuesUri)"
   $issues = Invoke-RestMethod -Uri $issuesUri -Headers $headers
+  Write-Host "Issues: $($issues.Count)"
 
   $labels = $issues | ForEach-Object { $_.labels } | Sort-Object -Property Name -Unique;
+  Write-host "Lables: $($labels.Count)"
 
   [void]$stringbuilder.AppendLine( "# $($milestone.title)" )
   [void]$stringbuilder.AppendLine( "" )
