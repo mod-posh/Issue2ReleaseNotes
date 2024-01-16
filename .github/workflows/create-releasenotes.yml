@@ -1,0 +1,20 @@
+name: Milestone Closure Trigger
+
+on:
+  milestone:
+    types: [closed]
+
+jobs:
+  create-release-notes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Your additional steps go here. For example:
+      - name: Create Release Notes
+        uses: mod-posh/Issue2ReleaseNotes@v0.0.2.31
+        with:
+          milestone_number: ${{ github.event.milestone.number }}
+          verbose: 'verbose'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
