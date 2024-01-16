@@ -6,31 +6,72 @@ The "Generate Release Notes" GitHub Action is designed to automatically generate
 
 ## Workflow File
 
-The `generate_release_notes.yml` file defines the workflow that is triggered by a `workflow_call` event. This allows other workflows to call this action and provide a milestone number for which the release notes should be generated.
+You can trigger the `action.yml` by `workflow_call` to generate the `RELEASE.md` file automatically. The workflow contains several steps to act:
+
+1. Checkout the repository
+2. Call the `issue2releasenotes.ps1` script
+3. Defining the git user for GitHub Actions
+4. Commit the Release Notes
 
 ### Workflow Inputs
 
-- `milestone_number`: The number of the milestone for which you want to generate release notes. This input is required.
+- `milestone_number`: The milestone number for which you want to generate release notes. This input is required.
+- `verbose`: A value of verbose will output additional information. This input is not required.
+- `github_token`: This is the built-in Github Token; this is passed as an environment variable. This input is required.
 
-## PowerShell Script (`generate_release_notes.ps1`)
+## PowerShell Script (`issue2releasenotes.ps1`)
 
-The PowerShell script, `generate_release_notes.ps1`, uses the GitHub API to fetch closed issues from a specified milestone and generates a markdown-formatted release notes file. It organizes the issues by their labels, creating a section for each label.
+The PowerShell script uses the GitHub API to retrieve the milestone to work with. It then collects all closed issues associated with the milestone and groups them by label. If no label is associated with an issue, it is placed in the `No Label` group. Finally, the `RELEASE`.md` file is generated using information collected from the milestone and issues.
 
 ## Usage
 
-To use this action in your workflow, include a step that calls this workflow with the required `milestone_number`. Example:
+There are a few different ways to use this action; here are a few examples to get you started.
+
+> [!Caution]
+> This action will replace any `RELEASE.md` file found
 
 ```yaml
 jobs:
   call_generate_release_notes:
-    uses: mod-posh/Issue2Release@v0.0.2.0
+    uses: mod-posh/Issue2Release@v0.0.2.31
     with:
       milestone_number: 1 # Replace with your milestone number
+      verbose: 'verbose'
+      github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+> [!Note]
+> This example is used directly as part of a larger workflow
+> The verbose option will output a little more detail in the logs
+
+```yaml
+on:
+  milestone:
+    types: [closed]
+
+jobs:
+  create-release-notes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Create Release Notes
+        uses: mod-posh/Issue2ReleaseNotes@v0.0.2.30
+        with:
+          milestone_number: ${{ github.event.milestone.number }}
+          verbose: 'none'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+```
+
+> [!Note]
+> This example runs when a milestone is closed
+> Verbose set to none outputs minimal information to the log
 
 ### Note
 
-This action assumes that the repository has the necessary permissions set for GitHub Actions to access repository issues and milestones.
+This action assumes that the repository has the permissions set for GitHub Actions to access repository issues and milestones.
 
 ## License
 
