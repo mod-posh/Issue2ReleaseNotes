@@ -85,7 +85,11 @@ try
   }
 
  }
- return $stringbuilder.ToString();
+ if ($env:Verbose.ToLower() -eq 'verbose')
+ {
+  $stringbuilder.ToString();
+ }
+ $stringbuilder.ToString() |Out-File RELEASE.md -Encoding ascii -Force
 }
 catch
 {
