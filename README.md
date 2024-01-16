@@ -2,7 +2,7 @@
 
 ## Overview
 
-The "Generate Release Notes" GitHub Action is designed to automatically generate release notes for a specified milestone in a GitHub repository. It collects all closed issues associated with the given milestone and formats them into a markdown file (`RELEASE.md`), categorized by issue labels.
+The "Issue2ReleaseNotes" GitHub Action is designed to automatically generate release notes for a specified milestone in a GitHub repository. It collects all closed issues associated with the given milestone and formats them into a markdown file (`RELEASE.md`), categorized by issue labels.
 
 ## Workflow File
 
@@ -68,10 +68,6 @@ jobs:
 > [!Note]
 > This example runs when a milestone is closed
 > Verbose set to none outputs minimal information to the log
-
-### Note
-
-This action assumes that the repository has the permissions set for GitHub Actions to access repository issues and milestones.
 
 ## License
 
