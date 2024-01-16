@@ -50,3 +50,4 @@ runs:
         git add RELEASE.md
         git commit -m "Add release notes for milestone ${{ inputs.milestone_number }}"
         git push
+      shell: pwsh
