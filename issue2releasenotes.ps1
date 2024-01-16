@@ -31,15 +31,14 @@ try
 
   foreach ($issue in $issues)
   {
-   if ($issue.labels.Count -eq 0)
+   $label = if ($issue.labels.Count -eq 0)
    {
-    # Handle issues with no labels
-    $label = 'No Label'
+    'No Label'
    }
    else
    {
-    # Concatenate all label titles for an issue
-    $label = ($issue.labels | ForEach-Object { $_.name }) -join ', '
+    # Concatenate all label titles for an issue into a single string
+    ($issue.labels | ForEach-Object { $_.name }) -join ', '
    }
 
    # Add the issue to the appropriate group in the hashtable
@@ -50,6 +49,12 @@ try
    $groupedIssues[$label] += $issue
   }
 
+  $sortedKeys = $groupedIssues.Keys | Sort-Object -Property {
+   if ($_ -eq 'bug') { return 0 }
+   if ($_ -like 'bug*') { return 1 }
+   elseif ($_ -eq 'No Label') { return 99 }
+   else { return 2 }
+  }
   [void]$stringbuilder.AppendLine( "# $($milestone.title)" )
   [void]$stringbuilder.AppendLine( "" )
 
@@ -58,7 +63,7 @@ try
    [void]$stringbuilder.AppendLine( "$($milestone.description)" )
   }
 
-  foreach ($key in $groupedIssues.Keys)
+  foreach ($key in $sortedKeys)
   {
    [void]$stringbuilder.AppendLine( "" )
    [void]$stringbuilder.AppendLine( "## $($key.ToUpper())" )
@@ -66,10 +71,7 @@ try
 
    foreach ($issue in $groupedIssues[$key])
    {
-    if ($issue.labels.name -contains $label.name)
-    {
-     [void]$stringbuilder.AppendLine( "* $($issue.title) #$($issue.number)" )
-    }
+    [void]$stringbuilder.AppendLine( "* issue-$($issue.number): $($issue.title)" )
    }
   }
 
