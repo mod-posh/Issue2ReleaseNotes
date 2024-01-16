@@ -11,6 +11,11 @@ inputs:
     description: 'The milestone number for which to generate release notes.'
     required: true
     type: string
+  verbose:
+    description: "A value of verbose will output additional information"
+    required: false
+    type: string
+    default: 'None'
   github_token:
     description: 'GitHub token'
     required: true
@@ -24,6 +29,7 @@ runs:
     - name: Create ReleaseNotes
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        verbose: ${{ intputs.verbose }}
       run: |
         & $env:GITHUB_ACTION_PATH\\issue2releasenotes.ps1 -MilestoneNumber ${{ inputs.milestone_number }}
       shell: pwsh

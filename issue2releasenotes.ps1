@@ -15,17 +15,26 @@ try
  }
 
  $milestoneUri = "https://api.github.com/repos/$($repository)/milestones/$($MilestoneNumber)"
-
- Write-Host "MilestoneUri: $($milestoneUri)"
  $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers
+
+ if ($env:Verbose.ToLower() -eq 'verbose')
+ {
+  Write-Host "Issue2ReleaseNotes DEBUG"
+  Write-Host "Repository      : $($repository)"
+  Write-Host "MilestoneNumber : $($MilestoneNumber)"
+  Write-Host "MilestoneUri    : $($milestoneUri)"
+ }
 
  if ($Milestone)
  {
   $issuesUri = "https://api.github.com/repos/$($repository)/issues?state=closed&milestone=$($milestone.Number)"
-
-  Write-Host "IssuesUri: $($issuesUri)"
   $issues = Invoke-RestMethod -Uri $issuesUri -Headers $headers
-  Write-Host "Issues: $($issues.Count)"
+
+  if ($env:Verbose.ToLower() -eq 'verbose')
+  {
+   Write-Host "IssuesUri       : $($issuesUri)"
+   Write-Host "Issues          : $($issues.Count)"
+  }
 
   $groupedIssues = @{}
 
@@ -80,6 +89,9 @@ try
 }
 catch
 {
- $_.Exception.Message;
- throw $_.InvocationInfo | Out-String;
+ if ($env:Verbose.ToLower() -eq 'verbose')
+ {
+  $_.InvocationInfo | Out-String;
+ }
+ throw $_.Exception.Message;
 }
