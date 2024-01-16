@@ -24,7 +24,7 @@ runs:
   using: 'composite'
   steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Create ReleaseNotes
       env:
@@ -33,17 +33,6 @@ runs:
       run: |
         & $env:GITHUB_ACTION_PATH\\issue2releasenotes.ps1 -MilestoneNumber ${{ inputs.milestone_number }}
       shell: pwsh
-
-    - name: Upload Release Notes
-      uses: actions/upload-artifact@v2
-      with:
-        name: release-notes
-        path: RELEASE.md
-
-    - name: Download Release Notes
-      uses: actions/download-artifact@v2
-      with:
-        name: release-notes
 
     - name: Set up Git User
       run: |
