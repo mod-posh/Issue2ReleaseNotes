@@ -93,9 +93,6 @@ try
 }
 catch
 {
- if ($env:Verbose.ToLower() -eq 'verbose')
- {
-  $_.InvocationInfo | Out-String;
- }
+ $_.InvocationInfo | Out-String;
  throw $_.Exception.Message;
 }
