@@ -45,6 +45,12 @@ runs:
       with:
         name: release-notes
 
+    - name: Set up Git User
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      shell: pwsh
+
     - name: Commit and Push Release Notes
       run: |
         git add RELEASE.md
