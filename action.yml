@@ -39,3 +39,14 @@ runs:
       with:
         name: release-notes
         path: RELEASE.md
+
+    - name: Download Release Notes
+      uses: actions/download-artifact@v2
+      with:
+        name: release-notes
+
+    - name: Commit and Push Release Notes
+      run: |
+        git add RELEASE.md
+        git commit -m "Add release notes for milestone ${{ inputs.milestone_number }}"
+        git push
