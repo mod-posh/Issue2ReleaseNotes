@@ -8,6 +8,7 @@ try
 
  $repository = $env:GITHUB_REPOSITORY
  $token = $env:GITHUB_TOKEN
+ $verbose = $env:VERBOSE
  [System.Text.StringBuilder]$stringbuilder = [System.Text.StringBuilder]::new()
 
  $headers = @{
@@ -17,7 +18,7 @@ try
  $milestoneUri = "https://api.github.com/repos/$($repository)/milestones/$($MilestoneNumber)"
  $milestone = Invoke-RestMethod -Uri $milestoneUri -Headers $headers
 
- if ($env:Verbose.ToLower() -eq 'verbose')
+ if ($verbose.ToLower() -eq 'verbose')
  {
   Write-Host "Issue2ReleaseNotes DEBUG"
   Write-Host "Repository      : $($repository)"
@@ -30,7 +31,7 @@ try
   $issuesUri = "https://api.github.com/repos/$($repository)/issues?state=closed&milestone=$($milestone.Number)"
   $issues = Invoke-RestMethod -Uri $issuesUri -Headers $headers
 
-  if ($env:Verbose.ToLower() -eq 'verbose')
+  if ($verbose.ToLower() -eq 'verbose')
   {
    Write-Host "IssuesUri       : $($issuesUri)"
    Write-Host "Issues          : $($issues.Count)"
@@ -85,7 +86,7 @@ try
   }
 
  }
- if ($env:Verbose.ToLower() -eq 'verbose')
+ if ($verbose.ToLower() -eq 'verbose')
  {
   $stringbuilder.ToString();
  }

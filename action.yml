@@ -29,7 +29,7 @@ runs:
     - name: Create ReleaseNotes
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
-        verbose: ${{ inputs.verbose }}
+        VERBOSE: ${{ inputs.verbose }}
       run: |
         & $env:GITHUB_ACTION_PATH\\issue2releasenotes.ps1 -MilestoneNumber ${{ inputs.milestone_number }}
       shell: pwsh
