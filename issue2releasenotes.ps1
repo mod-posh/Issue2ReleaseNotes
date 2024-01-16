@@ -8,7 +8,6 @@ try
 
  $repository = $env:GITHUB_REPOSITORY
  $token = $env:GITHUB_TOKEN
- $MilestoneNumber = $env:MilestoneNumber
  [System.Text.StringBuilder]$stringbuilder = [System.Text.StringBuilder]::new()
 
  $headers = @{
@@ -22,15 +21,34 @@ try
 
  if ($Milestone)
  {
-  # Fetch issues
   $issuesUri = "https://api.github.com/repos/$($repository)/issues?state=closed&milestone=$($milestone.Number)"
 
   Write-Host "IssuesUri: $($issuesUri)"
   $issues = Invoke-RestMethod -Uri $issuesUri -Headers $headers
   Write-Host "Issues: $($issues.Count)"
 
-  $labels = $issues | ForEach-Object { $_.labels } | Sort-Object -Property Name -Unique;
-  Write-host "Lables: $($labels.Count)"
+  $groupedIssues = @{}
+
+  foreach ($issue in $issues)
+  {
+   if ($issue.labels.Count -eq 0)
+   {
+    # Handle issues with no labels
+    $label = 'No Label'
+   }
+   else
+   {
+    # Concatenate all label titles for an issue
+    $label = ($issue.labels | ForEach-Object { $_.name }) -join ', '
+   }
+
+   # Add the issue to the appropriate group in the hashtable
+   if (-not $groupedIssues.ContainsKey($label))
+   {
+    $groupedIssues[$label] = @()
+   }
+   $groupedIssues[$label] += $issue
+  }
 
   [void]$stringbuilder.AppendLine( "# $($milestone.title)" )
   [void]$stringbuilder.AppendLine( "" )
@@ -40,13 +58,13 @@ try
    [void]$stringbuilder.AppendLine( "$($milestone.description)" )
   }
 
-  foreach ($label in $labels)
+  foreach ($key in $groupedIssues.Keys)
   {
    [void]$stringbuilder.AppendLine( "" )
-   [void]$stringbuilder.AppendLine( "## $($label.name.ToUpper())" )
+   [void]$stringbuilder.AppendLine( "## $($key.ToUpper())" )
    [void]$stringbuilder.AppendLine( "" )
 
-   foreach ($issue in $issues)
+   foreach ($issue in $groupedIssues[$key])
    {
     if ($issue.labels.name -contains $label.name)
     {
@@ -54,11 +72,12 @@ try
     }
    }
   }
+
  }
  return $stringbuilder.ToString();
 }
 catch
 {
  $_.Exception.Message;
- throw $_.InvocationInfo |Out-String;
+ throw $_.InvocationInfo | Out-String;
 }

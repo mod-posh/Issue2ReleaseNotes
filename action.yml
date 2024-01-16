@@ -23,10 +23,9 @@ runs:
 
     - name: Create ReleaseNotes
       env:
-        MilestoneNumber: ${{ inputs.milestone_number }}
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
       run: |
-        & $env:GITHUB_ACTION_PATH\\issue2releasenotes.ps1 -MilestoneNumber $MilestoneNumber
+        & $env:GITHUB_ACTION_PATH\\issue2releasenotes.ps1 -MilestoneNumber ${{ inputs.milestone_number }}
       shell: pwsh
 
     - name: Upload Release Notes
