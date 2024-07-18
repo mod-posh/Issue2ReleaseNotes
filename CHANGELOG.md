@@ -4,6 +4,10 @@ All changes to this project should be reflected in this document.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [[0.0.3.1]](https://github.com/mod-posh/issue2releasenotes/releases/tag/v0.0.3.1) - 2024-07-17
+
+Minor change in this release, removed the checkout task.
+
 ## [[0.0.3.0]](https://github.com/mod-posh/issue2releasenotes/releases/tag/v0.0.3.0) - 2024-07-17
 
 This release ensures compliance with GitHub API requirements by adding a User-Agent header, simplify the verbose mode check for better readability, and improve the sorting logic with a switch statement. Most importantly, changing the file output encoding to UTF-8 ensures that Cyrillic symbols and other non-ASCII characters are correctly handled and displayed in the release notes.
