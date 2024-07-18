@@ -94,6 +94,8 @@ try
       $stringbuilder.ToString() | Write-Host
     }
 
+    $envFile = [System.IO.Path]::Combine($env:GITHUB_ENV)
+    Add-Content -Path $envFile -Value "BODY=$($stringbuilder.ToString())"
     $stringbuilder.ToString() | Out-File RELEASE.md -Encoding utf8 -Force
   }
 }

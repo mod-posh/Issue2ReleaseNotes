@@ -4,6 +4,48 @@ All changes to this project should be reflected in this document.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [[0.0.3.2]](https://github.com/mod-posh/issue2releasenotes/releases/tag/v0.0.3.2) - 2024-07-18
+
+Output BODY to the env files like we do in the GetProjectVersion task. This change will allow you to pull the body from the env in your pipelines
+
+```yaml
+name: Milestone Closure Trigger
+
+on:
+  milestone:
+    types: [closed]
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Get Project Version
+        id: get_version
+        uses: mod-posh/GetProjectVersion@v0.0.2.2
+        with:
+          Filename: 'SpnLibrary\SpnLibrary.psd1'
+          verbose: "verbose"
+
+      - name: Create Release Notes
+        uses: mod-posh/Issue2ReleaseNotes@v0.0.3.1
+        with:
+          milestone_number: ${{ github.event.milestone.number }}
+          verbose: 'verbose'
+          github_token: ${{ secrets.PAT }}
+
+      - name: Create Release
+        uses: mod-posh/NewTaggedRelease@v0.0.2.15
+        with:
+          name: 'Release v${{ env.VERSION }}'
+          body: ${{ env.BODY }}
+          version: ${{ env.VERSION }}
+          verbose: 'verbose'
+          github_token: ${{ secrets.PAT }}
+```
+
 ## [[0.0.3.1]](https://github.com/mod-posh/issue2releasenotes/releases/tag/v0.0.3.1) - 2024-07-17
 
 Minor change in this release, removed the checkout task.
