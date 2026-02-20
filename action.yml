@@ -11,6 +11,11 @@ inputs:
     description: 'The milestone number for which to generate release notes.'
     required: true
     type: string
+  write_mode:
+    description: "How to persist RELEASE.md: direct (commit+push), none (no git changes). pr will be added later."
+    required: false
+    type: string
+    default: 'direct'
   verbose:
     description: "A value of verbose will output additional information"
     required: false
@@ -24,6 +29,7 @@ runs:
   using: 'composite'
   steps:
     - name: Create ReleaseNotes
+      id: create
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         VERBOSE: ${{ inputs.verbose }}
@@ -32,14 +38,25 @@ runs:
       shell: pwsh
 
     - name: Set up Git User
+      if: ${{ inputs.write_mode == 'direct' }}
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
       shell: pwsh
 
     - name: Commit and Push Release Notes
+      if: ${{ inputs.write_mode == 'direct' }}
       run: |
         git add RELEASE.md
         git commit -m "Add release notes for milestone ${{ inputs.milestone_number }}"
         git push
       shell: pwsh
+
+outputs:
+  release_file:
+    description: "Path to the generated release notes file."
+    value: ${{ steps.create.outputs.release_file }}
+
+  milestone_title:
+    description: "Title of the milestone."
+    value: ${{ steps.create.outputs.milestone_title }}

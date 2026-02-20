@@ -2,47 +2,150 @@
 
 ## Overview
 
-The "Issue2ReleaseNotes" GitHub Action is designed to automatically generate release notes for a specified milestone in a GitHub repository. It collects all closed issues associated with the given milestone and formats them into a markdown file (`RELEASE.md`), categorized by issue labels.
+The **Issue2ReleaseNotes** GitHub Action automatically generates release notes for a specified milestone in a GitHub repository.
 
-## Workflow File
+It:
 
-You can trigger the `action.yml` by `workflow_call` to generate the `RELEASE.md` file automatically. The workflow contains several steps to act:
+* Retrieves the milestone from the GitHub API
+* Collects **all closed issues** associated with that milestone
+* Supports **API pagination** (no 30-issue limit)
+* Groups issues by label
+* Generates a markdown file (`RELEASE.md`)
 
-1. Checkout the repository
-2. Call the `issue2releasenotes.ps1` script
-3. Defining the git user for GitHub Actions
-4. Commit the Release Notes
+The output file can either:
 
-### Workflow Inputs
+* Be committed directly to the repository (default behavior)
+* Be generated only (for artifact upload or use as release body)
 
-- `milestone_number`: The milestone number for which you want to generate release notes. This input is required.
-- `verbose`: A value of verbose will output additional information. This input is not required.
-- `github_token`: This is the built-in Github Token; this is passed as an environment variable. This input is required.
+---
 
-## PowerShell Script (`issue2releasenotes.ps1`)
+## Features
 
-The PowerShell script uses the GitHub API to retrieve the milestone to work with. It then collects all closed issues associated with the milestone and groups them by label. If no label is associated with an issue, it is placed in the `No Label` group. Finally, the `RELEASE`.md` file is generated using information collected from the milestone and issues.
+* ✅ Groups issues by label
+* ✅ Issues without labels grouped under `No Label`
+* ✅ Pagination support (`per_page=100` + Link header traversal)
+* ✅ Optional verbose logging
+* ✅ Optional artifact-only mode
+* ✅ Outputs available for downstream workflow steps
 
-## Usage
+---
 
-There are a few different ways to use this action; here are a few examples to get you started.
+## Inputs
 
-> [!Caution]
-> This action will replace any `RELEASE.md` file found
+| Name               | Required | Default  | Description                                          |
+| ------------------ | -------- | -------- | ---------------------------------------------------- |
+| `milestone_number` | ✅ Yes    | —        | The milestone number to generate release notes for   |
+| `github_token`     | ✅ Yes    | —        | GitHub token (usually `${{ secrets.GITHUB_TOKEN }}`) |
+| `verbose`          | ❌ No     | `None`   | Set to `verbose` to enable debug output              |
+| `write_mode`       | ❌ No     | `direct` | `direct` = commit & push; `none` = generate only     |
+
+---
+
+## Outputs
+
+| Name              | Description                                                  |
+| ----------------- | ------------------------------------------------------------ |
+| `release_file`    | Path to generated release notes file (default: `RELEASE.md`) |
+| `milestone_title` | Title of the milestone                                       |
+
+These outputs allow you to upload artifacts or create releases without hardcoding filenames.
+
+---
+
+# Behavior Modes
+
+## `write_mode: direct` (Default)
+
+* Generates `RELEASE.md`
+* Commits the file
+* Pushes to the current branch
+
+> ⚠️ Will fail if branch protection requires pull requests.
+
+---
+
+## `write_mode: none`
+
+* Generates `RELEASE.md`
+* Does **not** commit
+* Does **not** push
+* Intended for artifact uploads or release body usage
+
+---
+
+# Usage Examples
+
+---
+
+## Basic Usage (Default: Commit to Repo)
 
 ```yaml
 jobs:
-  call_generate_release_notes:
-    uses: mod-posh/Issue2Release@v0.0.2.31
-    with:
-      milestone_number: 1 # Replace with your milestone number
-      verbose: 'verbose'
-      github_token: ${{ secrets.GITHUB_TOKEN }}
+  generate-release-notes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: mod-posh/Issue2ReleaseNotes@v0.0.3.4
+        with:
+          milestone_number: 1
+          verbose: 'verbose'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-> [!Note]
-> This example is used directly as part of a larger workflow
-> The verbose option will output a little more detail in the logs
+---
+
+## Artifact-Only Mode (Recommended for Protected Branches)
+
+```yaml
+jobs:
+  generate-release-notes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate Release Notes
+        id: notes
+        uses: mod-posh/Issue2ReleaseNotes@v0.0.3.4
+        with:
+          milestone_number: ${{ github.event.milestone.number }}
+          write_mode: none
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Notes Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes-${{ steps.notes.outputs.milestone_title }}
+          path: ${{ steps.notes.outputs.release_file }}
+```
+
+---
+
+## Use as GitHub Release Body
+
+```yaml
+- name: Generate Release Notes
+  id: notes
+  uses: mod-posh/Issue2ReleaseNotes@v0.0.3.4
+  with:
+    milestone_number: ${{ github.event.milestone.number }}
+    write_mode: none
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+
+- name: Create GitHub Release
+  run: |
+    gh release create v${{ github.event.milestone.title }} \
+      --notes-file "${{ steps.notes.outputs.release_file }}"
+  env:
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+---
+
+# Automatic Milestone Trigger Example
 
 ```yaml
 on:
@@ -53,22 +156,29 @@ jobs:
   create-release-notes:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Create Release Notes
-        uses: mod-posh/Issue2ReleaseNotes@v0.0.2.30
+      - uses: mod-posh/Issue2ReleaseNotes@v0.0.3.4
         with:
           milestone_number: ${{ github.event.milestone.number }}
-          verbose: 'none'
           github_token: ${{ secrets.GITHUB_TOKEN }}
-
 ```
 
+---
+
+# Important Notes
+
+> [!Caution]
+> This action will overwrite any existing `RELEASE.md` file.
+
 > [!Note]
-> This example runs when a milestone is closed
-> Verbose set to none outputs minimal information to the log
+> GitHub’s Issues API includes Pull Requests. This action automatically filters PRs out.
 
-## License
+> [!Note]
+> Pagination is supported, so milestones with more than 30 issues are handled correctly.
 
-This project is licensed under the [Gnu GPL-3](LICENSE).
+---
+
+# License
+
+This project is licensed under the [GNU GPL-3](LICENSE).

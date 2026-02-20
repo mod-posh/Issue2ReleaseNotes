@@ -4,6 +4,11 @@ All changes to this project should be reflected in this document.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [[0.0.4.0]](https://github.com/mod-posh/issue2releasenotes/releases/tag/v0.0.4.0) - 2026-02-20
+
+Updated the action to support situations where branch protection is involved. If you have branch protection set the
+write_mode parameter to 'none'. This creates the file in the `$GITHUB_WORKSPACE` on the runner.
+
 ## [[0.0.3.3]](https://github.com/mod-posh/issue2releasenotes/releases/tag/v0.0.3.3) - 2024-07-18
 
 Github Env Files I think are [limited](https://docs.github.com/en/actions/learn-github-actions/variables#limits-for-configuration-variables) along with the rest of the variables, which means a simple Release Notes document could exceed the maxium 256KB allowed for all variables in a workflow very quickly. This change removes outputting that to the environment.
